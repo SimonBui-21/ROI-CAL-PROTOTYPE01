@@ -14,12 +14,15 @@ export default function Home() {
   //result
   const [result, setResult] = useState<CalcResult | null>(null)
 
-  // call API
+  //zip
+  const [zip, setZip] = useState("75001")
+  // call backend
   async function calculate() {
-    const res = await fetch("/api-calc", {  //call back-end route
+    const res = await fetch("/api-calc", {  //back-end route
       method: "POST",  //sending POST request
-      headers: { "Content-Type": "application/json" }, //the request's content is JSON
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        zip,
         batterySize,
         priceInDaytime,
         priceAtNighttime,
@@ -38,6 +41,15 @@ export default function Home() {
       </h1>
 
       {/* ===== INPUTS ===== */}
+      <div>
+        <label>Your Zip Code</label>
+        <input
+          type="text"
+          value={zip}
+          onChange={(e) => setZip(e.target.value)}
+          className="border p-2 rounded"
+        />
+      </div>
 
       <div>
         <label>Battery Size (kWh)</label>
@@ -90,6 +102,7 @@ export default function Home() {
 
       {result && (
         <div className="bg-gray-100 p-4 mt-4 rounded">
+          <p>Your State: {result.state || "unknow"}</p>
           <p>System Cost: ${result.systemCost}</p>
           <p>Incentives: ${result.incentives}</p>
           <p>Net Annual Cashflow: ${result.netAnnualCashflow}</p>
