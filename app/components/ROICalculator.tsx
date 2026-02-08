@@ -9,6 +9,7 @@ export default function ROICalculator() {
   const [priceInDaytime, setPriceInDaytime] = useState(0.4)
   const [priceAtNighttime, setPriceAtNighttime] = useState(0.1)
   const [chargingDaysPerYear, setChargingDaysPerYear] = useState(150)
+  const [zip, setZip] = useState("75001")
 
   //result
   const [result, setResult] = useState<CalcResult | null>(null)
@@ -20,6 +21,7 @@ export default function ROICalculator() {
       method: "POST", //sending POST request
       headers: { "Content-Type": "application/json" }, //the request's content is JSON
       body: JSON.stringify({
+        zip,
         batterySize,
         priceInDaytime,
         priceAtNighttime,
@@ -44,6 +46,18 @@ export default function ROICalculator() {
 
       <div className="bg-white rounded-lg shadow-lg p-8 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Your Zip Code
+            </label>
+            <input
+              type="text"
+              value={zip}
+              onChange={(e) => setZip(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 bg-blue-50 transition-all"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Battery Size (kWh)
@@ -105,6 +119,9 @@ export default function ROICalculator() {
       {result && (
         <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
           <h2 className="text-2xl font-bold mb-6 text-gray-900">Results</h2>
+          <p className="text-sm text-gray-600 mb-6">
+            Your State: {result.state || "unknown"}
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-lg p-4">
