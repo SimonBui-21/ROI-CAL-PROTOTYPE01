@@ -1,4 +1,8 @@
+import { getStateFromZip } from "./zipToState"
+
+
 export type CalcInput = {
+  zip: string
   batterySize: number
   priceInDaytime: number
   priceAtNighttime: number
@@ -6,6 +10,7 @@ export type CalcInput = {
 }
 
 export type CalcResult = {
+  state: string | null
   systemCost: number
   incentives: number
   annualOpex: number
@@ -24,6 +29,7 @@ const INCENTIVES = 46028
 const GRID_SERVICES = 5000
 
 export function calculateROI(input: CalcInput): CalcResult {
+  const state = getStateFromZip(input.zip) ?? "Unknown"
   const usableEnergy = input.batterySize * DOD * RTE
 
   const dailySavings =
@@ -40,7 +46,9 @@ export function calculateROI(input: CalcInput): CalcResult {
       ? "Never"
       : (SYSTEM_COST - INCENTIVES) / netAnnualCashflow
 
+
   return {
+    state,
     systemCost: SYSTEM_COST,
     annualOpex: ANNUAL_OPEX,
     incentives: INCENTIVES,

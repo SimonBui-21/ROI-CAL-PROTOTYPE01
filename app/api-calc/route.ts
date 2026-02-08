@@ -4,10 +4,10 @@ import { calculateROI, CalcInput, CalcResult } from "../../lib/calculator"
 export async function POST(req: NextRequest) {
   try {
     // 1. Read JSON from frontend
-    const body: CalcInput = await req.json()
+    const input: CalcInput = await req.json()
 
     // 2. Call calculator
-    const result: CalcResult = calculateROI(body)
+    const result: CalcResult = calculateROI(input)
 
     // 3. Return JSON
     return NextResponse.json(result)
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   
   } catch (error) {
     return NextResponse.json({
+      state: "",
       systemCost: 0,
       incentives: 0,
       annualOpex: 0,
