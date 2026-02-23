@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
       state,
       averagePrice: null,
       period: null,
-      updatedAt: null,
       source: "EIA unavailable",
     })
   }
