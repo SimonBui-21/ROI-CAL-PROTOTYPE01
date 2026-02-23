@@ -63,97 +63,123 @@ export default function Home() {
   }
 
   return (
-    <main className="p-10 max-w-xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">
+  <main className="min-h-screen bg-green-700 p-5">
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-2xl font-bold text-gray-900">
         Energy Storage ROI Calculator
       </h1>
 
-      {/* ===== INPUTS ===== */}
-      <div>
-        <label>Your Zip Code</label>
-        <input
-          type="text"
-          value={zip}
-          onChange={(e) => setZip(e.target.value)}
-          className="border p-2 rounded"
-        />
-      </div>
+      {/* ========== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 text-black text-sm">
+        {/* LEFT INPUT */}
+        <div className="space-y-4">
+          
+          {/* INPUT LABEL */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-black text-sm">
+            {/* ZIP CODE */}
+            <div className="space-y-1">
+              <label className="font-bold">ZIP Code</label>
+              <input
+                type="text"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="75001"
+              />
+            </div>
+            {/* BATTERY SIZE */}
+            <div className="space-y-1">
+              <label className="font-bold">Battery Size (kWh)</label>
+              <input
+                type="number"
+                value={batterySize}
+                onChange={(e) => setBatterySize(Number(e.target.value))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="200"
+              />
+            </div>
+            {/* PEAK PRICE */}
+            <div className="space-y-1">
+              <label className="font-bold">Peak Price ($/kWh)</label>
+              <input
+                type="number"
+                value={priceInDaytime}
+                onChange={(e) => setPriceInDaytime(Number(e.target.value))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="0.40"
+                step="0.0001"
+              />
+            </div>
+            {/* OFF-PEAK PRICE */}
+            <div className="space-y-1">
+              <label className="font-bold">Off-Peak Price ($/kWh)</label>
+              <input
+                type="number"
+                value={priceAtNighttime}
+                onChange={(e) => setPriceAtNighttime(Number(e.target.value))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="0.10"
+                step="0.0001"
+              />
+            </div>
+            {/* CHARGING DAYS */}
+            <div className="space-y-1 sm:col-span-2">
+              <label className="font-bold">Charging Days / Year</label>
+              <input
+                type="number"
+                value={chargingDaysPerYear}
+                onChange={(e) => setChargingDaysPerYear(Number(e.target.value))}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="150"
+              />
+            </div>
+          </div>
 
-      <div>
-        <label>Battery Size (kWh)</label>
-        <input
-          type="number"
-          value={batterySize}
-          onChange={(e) => setBatterySize(Number(e.target.value))}
-          className="border p-2 w-full"
-        />
-      </div>
-
-      <div>
-        <label>Peak Price ($/kWh)</label>
-        <input
-          type="number"
-          value={priceInDaytime}
-          onChange={(e) => setPriceInDaytime(Number(e.target.value))}
-          className="border p-2 w-full"
-        />
-      </div>
-
-      <div>
-        <label>Off Peak Price ($/kWh)</label>
-        <input
-          type="number"
-          value={priceAtNighttime}
-          onChange={(e) => setPriceAtNighttime(Number(e.target.value))}
-          className="border p-2 w-full"
-        />
-      </div>
-
-      <div>
-        <label>Charging Days Per Year</label>
-        <input
-          type="number"
-          value={chargingDaysPerYear}
-          onChange={(e) => setChargingDaysPerYear(Number(e.target.value))}
-          className="border p-2 w-full"
-        />
-      </div>
-
-      {/* ===== BUTTON ===== */}
-
-      <button
-        onClick={calculate}
-        className="bg-black text-white p-2 w-full"
-      >
-        Calculate
-      </button>
-
-      {result && (
-        <div className="bg-gray-100 p-4 mt-4 rounded">
-          <p>Your State: {result.state || "unknown"}</p>
-          <p>System Cost: ${result.systemCost}</p>
-          <p>Incentives: ${result.incentives}</p>
-          <p>Net Annual Cashflow: ${result.netAnnualCashflow}</p>
-          <p>Annual Costs: ${result.annualOpex}</p>
-          <p>
-            Payback Years: {typeof result.paybackYears === "number"
-          ? result.paybackYears.toFixed(1)
-          : result.paybackYears}
-          </p>
+          {/* ===== BUTTON ===== */}
+          <button
+            onClick={calculate}
+            className="w-full mt-10 rounded-md bg-black text-white py-2 font-medium hover:opacity-90"
+          >
+            Calculate
+          </button>
         </div>
-      )}
 
-      {eia && (
-        <div className="mt-3 border-t pt-3">
-          <p className="font-semibold">EIA Reference Data</p>
-          <p>
-            State Avg Price: {eia.averagePrice === null ? "N/A" : `$${eia.averagePrice.toFixed(4)} / kWh`}
-          </p>
-          <p>Period: {eia.period ?? "N/A"}</p>
-          <p>Source: {eia.source ?? "EIA"}</p>
+        {/* RIGHT OUTPUT */}
+        <div>
+          {(result || eia) && (
+          <div className="rounded-xl border border-black bg-lime-200 p-10 space-y-3 text-black">
+            <h2 className="font-bold">Results</h2>
+            
+            {eia && (
+            <div className="pt-3 border-t border-gray-200 text-sm space-y-1">
+              <p className="font-medium">EIA Reference Data</p>
+              <p>Avg Price:{" "}
+                {eia.averagePrice === null ? "N/A" : `$${eia.averagePrice.toFixed(4)} / kWh`}
+              </p>
+              <p>Period: {eia.period ?? "N/A"}</p>
+              <p>Source: {eia.source ?? "EIA"}</p>
+            </div>
+            )}
+            
+            {result && (
+            <div className="rounded-xl border border-black bg-emerald-400 p-4 space-y-3">
+                <p>Your State: {result.state || "unknown"}</p>
+                <p>System Cost: ${result.systemCost}</p>
+                <p>Incentives: ${result.incentives}</p>
+                <p>Annual Opex: ${result.annualOpex}</p>
+                <p>Net Annual Cashflow: ${result.netAnnualCashflow.toFixed(2)}</p>
+                <p>Payback:{" "}
+                  {typeof result.paybackYears === "number"
+                    ? `${result.paybackYears.toFixed(1)} years`
+                    : result.paybackYears}
+                </p>
+            </div>
+            )}
+          </div>
+          )}
         </div>
-      )}
-    
-    </main>
+      </div>
+    </div> 
+  </main>
   )
 }
