@@ -16,6 +16,14 @@ export default function Home() {
 
   //zip
   const [zip, setZip] = useState("75001")
+  //call EIA
+  const [eia, setEia] = useState<{
+    state: string
+    averagePrice: number | null
+    period: string | null
+    source: string
+  } | null>(null)
+
   // call backend
   async function calculate() {
     const res = await fetch("/api-calc", {  //back-end route
@@ -32,6 +40,26 @@ export default function Home() {
 
     const data = await res.json()
     setResult(data)
+
+    // Fetch EIA state average price (from cached DB route)
+    try {
+      const eiaRes = await fetch("/api-eia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ zip }),
+      })
+
+      // If route doesn't exist or errors, avoid breaking the UI
+      if (!eiaRes.ok) {
+        setEia(null)
+        return
+      }
+
+      const eiaData = await eiaRes.json()
+      setEia(eiaData)
+    } catch {
+      setEia(null)
+    }
   }
 
   return (
@@ -102,7 +130,7 @@ export default function Home() {
 
       {result && (
         <div className="bg-gray-100 p-4 mt-4 rounded">
-          <p>Your State: {result.state || "unknow"}</p>
+          <p>Your State: {result.state || "unknown"}</p>
           <p>System Cost: ${result.systemCost}</p>
           <p>Incentives: ${result.incentives}</p>
           <p>Net Annual Cashflow: ${result.netAnnualCashflow}</p>
@@ -114,6 +142,18 @@ export default function Home() {
           </p>
         </div>
       )}
+
+      {eia && (
+        <div className="mt-3 border-t pt-3">
+          <p className="font-semibold">EIA Reference Data</p>
+          <p>
+            State Avg Price: {eia.averagePrice === null ? "N/A" : `$${eia.averagePrice.toFixed(4)} / kWh`}
+          </p>
+          <p>Period: {eia.period ?? "N/A"}</p>
+          <p>Source: {eia.source ?? "EIA"}</p>
+        </div>
+      )}
+    
     </main>
   )
 }
