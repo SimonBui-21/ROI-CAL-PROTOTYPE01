@@ -87,7 +87,7 @@ export default function PaybackChart({ result }: PaybackChartProps) {
                 position: "insideLeft",
               }}
             />
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
+            <Tooltip formatter={(value: any) => formatCurrency(value)} />
             <Legend verticalAlign="top" height={36} />
             <Line
               type="monotone"
