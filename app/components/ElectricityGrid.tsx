@@ -131,14 +131,14 @@ export default function ElectricityGrid() {
   return (
     <div className="max-w-7xl mx-auto p-8">
       <div className="mb-8">
-        <h2 className="text-4xl font-bold mb-2 text-gray-900">Electricity Price Data</h2>
-        <p className="text-gray-600">Most recent year monthly electricity prices by state</p>
+        <h2 className="text-4xl font-bold mb-2 text-foreground">Electricity Price Data</h2>
+        <p className="text-foreground opacity-70">Most recent year monthly electricity prices by state</p>
       </div>
 
       <button
         onClick={fetchGridData}
         disabled={loading}
-        className="mb-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 shadow-md transition-all duration-200">
+        className="mb-6 px-6 py-3 bg-primary text-foreground font-bold rounded-lg hover:opacity-90 disabled:opacity-50 shadow-md transition-all duration-200">
         {loading ? "Loading..." : "Refresh Data"}
       </button>
 
@@ -152,19 +152,19 @@ export default function ElectricityGrid() {
         <div>
           {/* Summary */}
           {gridData.response && (
-            <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-gray-800 mb-2">Data Summary</h3>
-              <p className="text-gray-700">
-                <span className="font-semibold text-2xl text-blue-600">{gridData.response.total || 0}</span> total records
+            <div className="mb-6 p-6 bg-secondary border-l-4 border-primary rounded-lg shadow-sm">
+              <h3 className="font-bold text-lg text-foreground mb-2">Data Summary</h3>
+              <p className="text-foreground opacity-80">
+                <span className="font-semibold text-2xl text-primary">{gridData.response.total || 0}</span> total records
               </p>
             </div>
           )}
 
           {/* Data Table */}
           {gridData.response?.data && gridData.response.data.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-secondary">
               <table className="min-w-full">
-                <thead className="bg-gradient-to-r from-gray-800 to-gray-900">
+                <thead className="bg-foreground">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
                       Period
@@ -186,28 +186,28 @@ export default function ElectricityGrid() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
+                <tbody className="bg-white divide-y divide-secondary">
                   {gridData.response.data.map((item: any, index: number) => (
                     <tr
                       key={index}
-                      className="hover:bg-blue-50 transition-colors duration-150">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      className="hover:bg-secondary transition-colors duration-150">
+                      <td className="px-6 py-4 text-sm font-medium text-foreground">
                         {item.period || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm font-semibold text-indigo-600">
+                      <td className="px-6 py-4 text-sm font-semibold text-primary">
                         {item.stateid || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      <td className="px-6 py-4 text-sm text-foreground opacity-90">
                         {item.stateName || item["state-name"] || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-foreground opacity-70">
                         {item.sectorid || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      <td className="px-6 py-4 text-sm text-foreground opacity-80">
                         {item.sectorName || item["sector-name"] || "N/A"}
                       </td>
                       <td className="px-6 py-4 text-sm text-right">
-                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 font-bold rounded-full">
+                        <span className="inline-block px-3 py-1 bg-secondary text-foreground font-bold rounded-full">
                           {item.price != null
                             ? Number(item.price).toFixed(2)
                             : "N/A"}
@@ -228,16 +228,16 @@ export default function ElectricityGrid() {
 
           {/* Raw JSON (collapsible) */}
           <details className="mt-8">
-            <summary className="cursor-pointer font-semibold text-gray-700 hover:text-blue-600 bg-gray-100 px-4 py-3 rounded-lg">
+            <summary className="cursor-pointer font-semibold text-foreground hover:text-primary bg-secondary px-4 py-3 rounded-lg">
               🔍 View Raw JSON Data
             </summary>
-            <div className="mt-3 bg-gray-900 p-6 rounded-lg overflow-auto shadow-inner">
-              <pre className="text-xs text-green-400 font-mono">{JSON.stringify(gridData, null, 2)}</pre>
+            <div className="mt-3 bg-foreground p-6 rounded-lg overflow-auto shadow-inner">
+              <pre className="text-xs text-primary font-mono">{JSON.stringify(gridData, null, 2)}</pre>
             </div>
           </details>
         </div>
       ) : (
-        !loading && <p className="text-gray-600">No data available</p>
+        !loading && <p className="text-foreground opacity-50">No data available</p>
       )}
     </div>
   )

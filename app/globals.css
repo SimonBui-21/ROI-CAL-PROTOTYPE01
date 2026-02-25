@@ -2,22 +2,26 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --primary: #6bbf00;
+  --secondary: rgba(0, 0, 0, 0.07);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* 
+   Removed dark mode media query to force the light theme colors 
+   as per user request for specific colors. 
+   Ideally, we would adjust the dark mode colors to match the requested palette 
+   but for now, ensuring consistency with the requested RGB values.
+*/
 
 body {
   background: var(--background);
