@@ -29,7 +29,7 @@ const INCENTIVES = 46028
 const GRID_SERVICES = 5000
 
 export function calculateROI(input: CalcInput): CalcResult {
-  const state = getStateFromZip(input.zip) ?? "Unknown"
+  const state = getStateFromZip(input.zip)
   const usableEnergy = input.batterySize * DOD * RTE
 
   const dailySavings =
