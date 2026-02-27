@@ -22,7 +22,7 @@ export default function Home() {
   } | null>(null)
 
   async function calculate() {
-    const res = await fetch("/api-calc", {
+    const res = await fetch("/api/api-calc", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,7 +38,7 @@ export default function Home() {
     setResult(data)
 
     try {
-      const eiaRes = await fetch("/api-eia", {
+      const eiaRes = await fetch("/api/api-eia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ zip }),
