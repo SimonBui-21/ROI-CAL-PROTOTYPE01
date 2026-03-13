@@ -1,11 +1,53 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 
 export default function ElectricityGrid() {
   const [gridData, setGridData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedState, setSelectedState] = useState("ALL")
+
+  const allData = gridData?.response?.data ?? []
+
+  const availableStates = useMemo(() => {
+    const states = new Set<string>()
+    allData.forEach((item: any) => {
+      if (item?.stateid) {
+        states.add(item.stateid)
+      }
+    })
+    return Array.from(states).sort((a, b) => a.localeCompare(b))
+  }, [allData])
+
+  const stateFilteredData = useMemo(() => {
+    if (selectedState === "ALL") {
+      return allData
+    }
+    return allData.filter((item: any) => item.stateid === selectedState)
+  }, [allData, selectedState])
+
+  const newestPeriod = useMemo(() => {
+    if (stateFilteredData.length === 0) {
+      return null
+    }
+
+    return stateFilteredData.reduce((latest: string, item: any) => {
+      const period = item?.period
+      if (typeof period !== "string") {
+        return latest
+      }
+      return period > latest ? period : latest
+    }, "")
+  }, [stateFilteredData])
+
+  const filteredData = useMemo(() => {
+    if (!newestPeriod) {
+      return []
+    }
+
+    return stateFilteredData.filter((item: any) => item.period === newestPeriod)
+  }, [stateFilteredData, newestPeriod])
 
   // Fetch electricity grid data
   async function fetchGridData() {
@@ -131,8 +173,12 @@ export default function ElectricityGrid() {
   return (
     <div className="max-w-7xl mx-auto p-8">
       <div className="mb-8">
-        <h2 className="text-4xl font-bold mb-2 text-foreground">Electricity Price Data</h2>
-        <p className="text-foreground opacity-70">Most recent year monthly electricity prices by state</p>
+        <h2 className="text-4xl font-bold mb-2 text-foreground">
+          Electricity Price Data
+        </h2>
+        <p className="text-foreground opacity-70">
+          Most recent year monthly electricity prices by state
+        </p>
       </div>
 
       <button
@@ -141,6 +187,30 @@ export default function ElectricityGrid() {
         className="mb-6 px-6 py-3 bg-primary text-foreground font-bold rounded-lg hover:opacity-90 disabled:opacity-50 shadow-md transition-all duration-200">
         {loading ? "Loading..." : "Refresh Data"}
       </button>
+
+      {allData.length > 0 && (
+        <div className="mb-6">
+          <label
+            htmlFor="state-filter"
+            className="block text-sm font-semibold text-foreground mb-2">
+            Filter by state
+          </label>
+          <select
+            id="state-filter"
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+            className="w-full md:w-72 px-4 py-2 border border-secondary rounded-lg bg-white text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="ALL">All states</option>
+            {availableStates.map((state) => (
+              <option
+                key={state}
+                value={state}>
+                {state}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && (
         <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -153,15 +223,26 @@ export default function ElectricityGrid() {
           {/* Summary */}
           {gridData.response && (
             <div className="mb-6 p-6 bg-secondary border-l-4 border-primary rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-foreground mb-2">Data Summary</h3>
+              <h3 className="font-bold text-lg text-foreground mb-2">
+                Data Summary
+              </h3>
               <p className="text-foreground opacity-80">
-                <span className="font-semibold text-2xl text-primary">{gridData.response.total || 0}</span> total records
+                <span className="font-semibold text-2xl text-primary">
+                  {filteredData.length}
+                </span>{" "}
+                newest records shown
+                {selectedState !== "ALL" && (
+                  <span className="ml-2 text-sm">for {selectedState}</span>
+                )}
+                {newestPeriod && (
+                  <span className="ml-2 text-sm">({newestPeriod})</span>
+                )}
               </p>
             </div>
           )}
 
           {/* Data Table */}
-          {gridData.response?.data && gridData.response.data.length > 0 ? (
+          {filteredData.length > 0 ? (
             <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-secondary">
               <table className="min-w-full">
                 <thead className="bg-foreground">
@@ -187,7 +268,7 @@ export default function ElectricityGrid() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-secondary">
-                  {gridData.response.data.map((item: any, index: number) => (
+                  {filteredData.map((item: any, index: number) => (
                     <tr
                       key={index}
                       className="hover:bg-secondary transition-colors duration-150">
@@ -221,7 +302,7 @@ export default function ElectricityGrid() {
           ) : (
             <div className="p-6 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow-sm">
               <p className="text-sm font-medium text-yellow-800">
-                ⚠️ No data records found in response
+                ⚠️ No data records found for the selected state
               </p>
             </div>
           )}
@@ -232,12 +313,16 @@ export default function ElectricityGrid() {
               🔍 View Raw JSON Data
             </summary>
             <div className="mt-3 bg-foreground p-6 rounded-lg overflow-auto shadow-inner">
-              <pre className="text-xs text-primary font-mono">{JSON.stringify(gridData, null, 2)}</pre>
+              <pre className="text-xs text-primary font-mono">
+                {JSON.stringify(gridData, null, 2)}
+              </pre>
             </div>
           </details>
         </div>
       ) : (
-        !loading && <p className="text-foreground opacity-50">No data available</p>
+        !loading && (
+          <p className="text-foreground opacity-50">No data available</p>
+        )
       )}
     </div>
   )
